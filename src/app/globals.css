@@ -226,7 +226,27 @@ body {
     );
   box-shadow:
     0 2px 0 rgba(255, 226, 178, 0.35) inset,
-    0 -3px 0 rgba(0, 0, 0, 0.35) inset;
+    0 -3px 0 rgba(0, 0, 0, 0.35) inset,
+    0 0 0 1px rgba(46, 25, 10, 0.45),
+    0 3px 3px -1px rgba(46, 25, 10, 0.4);
+}
+
+/* the dark seam where the frame meets the plaster — what actually reads as
+   "screwed to the wall" rather than floating in front of it */
+.board-frame::after {
+  content: "";
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  bottom: -6px;
+  height: 8px;
+  border-radius: 0 0 20px 20px;
+  background: linear-gradient(
+    180deg,
+    rgba(46, 25, 10, 0.45) 0%,
+    rgba(46, 25, 10, 0) 100%
+  );
+  filter: blur(2px);
 }
 
 .cork::before {
@@ -316,6 +336,111 @@ body {
   animation: decor-sway 7s ease-in-out infinite;
 }
 
+/* ---------- corridor traffic ---------- */
+
+@keyframes leg-swing-a {
+  0%,
+  100% {
+    transform: rotate(26deg);
+  }
+  50% {
+    transform: rotate(-26deg);
+  }
+}
+
+@keyframes leg-swing-b {
+  0%,
+  100% {
+    transform: rotate(-26deg);
+  }
+  50% {
+    transform: rotate(26deg);
+  }
+}
+
+@keyframes arm-swing-a {
+  0%,
+  100% {
+    transform: rotate(-17deg);
+  }
+  50% {
+    transform: rotate(17deg);
+  }
+}
+
+@keyframes arm-swing-b {
+  0%,
+  100% {
+    transform: rotate(17deg);
+  }
+  50% {
+    transform: rotate(-17deg);
+  }
+}
+
+@keyframes walk-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes stroll-right {
+  0% {
+    transform: translateX(-24vw);
+  }
+  44% {
+    transform: translateX(126vw);
+  }
+  100% {
+    transform: translateX(126vw);
+  }
+}
+
+@keyframes stroll-left {
+  0% {
+    transform: translateX(126vw);
+  }
+  48% {
+    transform: translateX(-24vw);
+  }
+  100% {
+    transform: translateX(-24vw);
+  }
+}
+
+.leg-front {
+  animation: leg-swing-a 0.92s ease-in-out infinite;
+}
+
+.leg-back {
+  animation: leg-swing-b 0.92s ease-in-out infinite;
+}
+
+.limb-front {
+  animation: arm-swing-b 0.92s ease-in-out infinite;
+}
+
+.limb-back {
+  animation: arm-swing-a 0.92s ease-in-out infinite;
+}
+
+.walk-bob {
+  animation: walk-bob 0.46s ease-in-out infinite;
+}
+
+.stroll-right {
+  animation: stroll-right 31s linear infinite;
+}
+
+.stroll-left {
+  animation: stroll-left 39s linear infinite;
+  animation-delay: -15s;
+}
+
 /* ---------- sticky note ---------- */
 
 .note {
@@ -348,7 +473,14 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .decor-swing,
-  .decor-sway {
+  .decor-sway,
+  .leg-front,
+  .leg-back,
+  .limb-front,
+  .limb-back,
+  .walk-bob,
+  .stroll-right,
+  .stroll-left {
     animation: none;
   }
 }
