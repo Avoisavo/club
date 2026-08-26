@@ -10,6 +10,9 @@ export type Note = {
   pin: PinKey;
   x: number;
   y: number;
+  /** undefined on notes pinned before sizes were adjustable */
+  w?: number;
+  h?: number;
   rotation: number;
   z: number;
 };
@@ -56,6 +59,13 @@ export function makeId() {
 
 export const NOTE_W = 190;
 export const NOTE_H = 190;
+export const NOTE_MIN = 120;
+export const NOTE_MAX = 520;
+
+/** Handwriting scales with the paper so a big note isn't mostly margin. */
+export function inkSize(width: number) {
+  return Math.round(Math.max(13, Math.min(34, width * 0.105)));
+}
 
 export const STORAGE_KEY = "club.noticeboard.v1";
 
@@ -85,6 +95,8 @@ export function defaultNotes(): Note[] {
     pin: PIN_KEYS[i % PIN_KEYS.length],
     x,
     y,
+    w: NOTE_W,
+    h: NOTE_H,
     rotation: (rand() - 0.5) * 8,
     z: i + 1,
   }));
