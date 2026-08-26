@@ -182,10 +182,16 @@ export default function NoticeBoard() {
     const move = (e: PointerEvent) => {
       const rect = boardRef.current?.getBoundingClientRect();
       if (!rect) return;
-      const x = clamp(e.clientX - rect.left - drag.dx, 6, rect.width - NOTE_W - 6);
-      const y = clamp(e.clientY - rect.top - drag.dy, 14, rect.height - 90);
       setNotes((prev) =>
-        prev.map((n) => (n.id === drag.id ? { ...n, x, y } : n)),
+        prev.map((n) => {
+          if (n.id !== drag.id) return n;
+          const w = n.w ?? NOTE_W;
+          return {
+            ...n,
+            x: clamp(e.clientX - rect.left - drag.dx, 6, rect.width - w - 6),
+            y: clamp(e.clientY - rect.top - drag.dy, 14, rect.height - 90),
+          };
+        }),
       );
     };
     const up = () => setDrag(null);
