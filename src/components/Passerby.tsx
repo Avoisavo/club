@@ -61,7 +61,7 @@ function Student({ kit, bagOnBack = true }: { kit: Kit; bagOnBack?: boolean }) {
   );
 }
 
-const GIRL: Kit = {
+const KIT_A: Kit = {
   skin: "#e8b98f",
   hair: "#3c2a1c",
   shirt: "#f4f1e6",
@@ -70,7 +70,7 @@ const GIRL: Kit = {
   shoe: "#2f2a26",
 };
 
-const BOY: Kit = {
+const KIT_B: Kit = {
   skin: "#c98d5e",
   hair: "#1f1a15",
   shirt: "#e9ecef",
@@ -84,7 +84,7 @@ export default function Passerby() {
     <div aria-hidden className="pointer-events-none fixed inset-0 z-40 overflow-hidden">
       <div className="stroll-right absolute bottom-[5vh]">
         <div className="walk-bob">
-          <Student kit={GIRL} />
+          <Student kit={KIT_A} />
         </div>
       </div>
 
@@ -92,7 +92,7 @@ export default function Passerby() {
         <div className="scale-90">
           <div className="walk-bob" style={{ animationDelay: "-0.22s" }}>
             <div className="scale-x-[-1]">
-              <Student kit={BOY} />
+              <Student kit={KIT_B} />
             </div>
           </div>
         </div>
