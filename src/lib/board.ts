@@ -95,8 +95,8 @@ export function defaultNotes(): Note[] {
     pin: PIN_KEYS[i % PIN_KEYS.length],
     x,
     y,
-    w: NOTE_W,
-    h: NOTE_H,
+    w: NOTE_W + i * 26,
+    h: NOTE_H + (i % 3) * 30,
     rotation: (rand() - 0.5) * 8,
     z: i + 1,
   }));
