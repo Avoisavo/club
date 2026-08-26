@@ -12,6 +12,8 @@ import BoardDecor from "./BoardDecor";
 import StickyNote from "./StickyNote";
 import {
   NOTE_H,
+  NOTE_MAX,
+  NOTE_MIN,
   NOTE_W,
   PAPERS,
   PAPER_KEYS,
@@ -29,6 +31,16 @@ import {
 
 type Drag = { id: string; dx: number; dy: number; moved: boolean } | null;
 
+type Resize = {
+  id: string;
+  startX: number;
+  startY: number;
+  w0: number;
+  h0: number;
+  /** note tilt in radians, so the grip follows the corner it is drawn on */
+  angle: number;
+} | null;
+
 const clamp = (v: number, lo: number, hi: number) =>
   Math.max(lo, Math.min(hi, v));
 
@@ -42,6 +54,7 @@ export default function NoticeBoard() {
   const [paper, setPaper] = useState<PaperKey>("lemon");
   const [editing, setEditing] = useState<string | null>(null);
   const [drag, setDrag] = useState<Drag>(null);
+  const [resize, setResize] = useState<Resize>(null);
   const [dropping, setDropping] = useState(false);
 
   const topZ = useMemo(
@@ -93,6 +106,8 @@ export default function NoticeBoard() {
             pin: PIN_KEYS[Math.floor(Math.random() * PIN_KEYS.length)],
             x,
             y,
+            w: NOTE_W,
+            h: NOTE_H,
             rotation: (Math.random() - 0.5) * 9,
             z,
             ...patch,
@@ -183,6 +198,61 @@ export default function NoticeBoard() {
       window.removeEventListener("pointercancel", up);
     };
   }, [drag]);
+
+  /* ---- resizing --------------------------------------------------------- */
+
+  const onResizeStart = useCallback(
+    (e: React.PointerEvent<HTMLElement>, note: Note) => {
+      e.stopPropagation();
+      setEditing(null);
+      setNotes((prev) =>
+        prev.map((n) => (n.id === note.id ? { ...n, z: topZ + 1 } : n)),
+      );
+      setResize({
+        id: note.id,
+        startX: e.clientX,
+        startY: e.clientY,
+        w0: note.w ?? NOTE_W,
+        h0: note.h ?? NOTE_H,
+        angle: (note.rotation * Math.PI) / 180,
+      });
+    },
+    [topZ],
+  );
+
+  useEffect(() => {
+    if (!resize) return;
+    const move = (e: PointerEvent) => {
+      const rect = boardRef.current?.getBoundingClientRect();
+      const dx = e.clientX - resize.startX;
+      const dy = e.clientY - resize.startY;
+      // undo the note's tilt so the grip tracks the corner under the cursor
+      const cos = Math.cos(resize.angle);
+      const sin = Math.sin(resize.angle);
+      const gx = dx * cos + dy * sin;
+      const gy = -dx * sin + dy * cos;
+      setNotes((prev) =>
+        prev.map((n) => {
+          if (n.id !== resize.id) return n;
+          const room = rect ? rect.width - n.x - 6 : NOTE_MAX;
+          return {
+            ...n,
+            w: clamp(resize.w0 + gx, NOTE_MIN, Math.min(NOTE_MAX, room)),
+            h: clamp(resize.h0 + gy, NOTE_MIN, NOTE_MAX),
+          };
+        }),
+      );
+    };
+    const up = () => setResize(null);
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
+    window.addEventListener("pointercancel", up);
+    return () => {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+      window.removeEventListener("pointercancel", up);
+    };
+  }, [resize]);
 
   /* ---- note actions ---------------------------------------------------- */
 
@@ -286,6 +356,7 @@ export default function NoticeBoard() {
                 dragging={drag?.id === note.id}
                 editing={editing === note.id}
                 onPointerDown={onPointerDown}
+                onResizeStart={onResizeStart}
                 onStartEdit={setEditing}
                 onStopEdit={() => setEditing(null)}
                 onChange={changeText}
