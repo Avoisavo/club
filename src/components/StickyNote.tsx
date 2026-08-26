@@ -127,7 +127,7 @@ export default function StickyNote({
         aria-valuemax={0}
         tabIndex={-1}
         onPointerDown={(e) => onResizeStart(e, note)}
-        className="absolute bottom-0 right-0 h-6 w-6 cursor-nwse-resize opacity-0 transition [.note:hover_&]:opacity-100"
+        className="absolute bottom-0 right-0 h-6 w-6 cursor-nwse-resize opacity-60 transition [.note:hover_&]:opacity-100"
         style={{
           background: `linear-gradient(135deg, transparent 48%, ${paper.fold} 50%)`,
         }}
