@@ -438,7 +438,7 @@ body {
 
 .stroll-left {
   animation: stroll-left 39s linear infinite;
-  animation-delay: -15s;
+  animation-delay: -10s;
 }
 
 /* ---------- sticky note ---------- */
